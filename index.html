@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Image Prompt Generator – EasyUseHub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root { --primary: #2563eb; --secondary: #0ea5e9; --bg: #f0f4f8; --text: #1e293b; }
+        body{ margin:0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        .container{ width:92%; max-width:850px; margin:30px auto; padding-bottom: 50px; }
+
+        /* Push Notification Card */
+        #push-notification {
+            position: fixed; bottom: -150px; right: 20px; width: 300px; background: #fff;
+            border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: flex;
+            align-items: center; padding: 15px; z-index: 10000; transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-left: 5px solid var(--primary); cursor: pointer;
+        }
+        #push-notification.active { bottom: 20px; }
+        #push-notification img { width: 45px; height: 45px; margin-right: 12px; }
+
+        /* Professional Ad Cards */
+        .ad-card { color: white; padding: 25px; margin: 15px 0; border-radius: 15px; cursor: pointer; text-align: left; transition: 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .ad-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .blue { background: linear-gradient(135deg, #1e3a8a, #2563eb); }
+        .green { background: linear-gradient(135deg, #059669, #10b981); }
+        .orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .ad-btn { background: #fff; color: #000; padding: 7px 18px; border-radius: 6px; font-weight: bold; display: inline-block; margin-top: 12px; font-size: 13px; }
+
+        /* Main Generator Box */
+        .main-box { background: #fff; padding: 40px 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }
+        h1 { font-size: 28px; color: var(--primary); margin-bottom: 10px; }
+        textarea { width: 95%; height: 120px; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; outline: none; transition: 0.3s; resize: none; margin-bottom: 20px; }
+        textarea:focus { border-color: var(--primary); background: #f8fafc; }
+        
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; cursor: pointer; font-size: 14px; }
+
+        .gen-btn { background: var(--primary); color: #fff; padding: 18px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 18px; width: 100%; transition: 0.3s; }
+        .gen-btn:hover { background: #1d4ed8; filter: brightness(1.1); }
+
+        /* Result Area */
+        #resultArea { display: none; margin-top: 30px; background: #f8fafc; padding: 25px; border-radius: 15px; border: 2px dashed #cbd5e1; text-align: left; }
+        #promptText { font-size: 15px; color: #334155; line-height: 1.6; word-wrap: break-word; }
+        .copy-btn { background: #059669; color: #fff; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 20px; font-size: 16px; transition: 0.3s; }
+        .copy-btn:hover { background: #047857; }
+
+        .footer-nav { margin-top: 30px; display: flex; gap: 10px; }
+        .footer-nav button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; }
+    </style>
+</head>
+<body>
+
+<div id="push-notification" onclick="window.open('https://easyusehub.blogspot.com', '_blank')">
+    <img src="https://cdn-icons-png.flaticon.com/512/5968/5968313.png" alt="icon">
+    <div style="text-align:left;"><b style="font-size:14px;">🚀 Boost Your Productivity!</b><p style="font-size:11px; color:#666; margin:2px 0;">Access 46+ Professional Tools for Free.</p></div>
+</div>
+
+<div class="container">
+    <div class="ad-card blue" onclick="window.open('https://easyusehub.blogspot.com', '_blank')">
+        <span class="ad-title">🎁 46+ All-in-One Online Tools</span>
+        <p style="margin:5px 0; font-size: 14px;">PDF Tools, Image Editors, and Advanced Calculators.</p>
+        <div class="ad-btn">Visit EasyUseHub</div>
+    </div>
+
+    <div class="main-box">
+        <h1>AI Image Prompt Generator</h1>
+        <p style="color:#64748b; margin-bottom:30px;">Turn simple text into professional high-quality AI prompts.</p>
+        
+        <textarea id="userInput" placeholder="Describe your image idea (e.g., A futuristic city with flying cars)"></textarea>
+        
+        <div class="options-grid">
+            <select id="artStyle">
+                <option value="Photorealistic">📸 Photorealistic</option>
+                <option value="Digital Art">🎨 Digital Art</option>
+                <option value="Anime & Manga">🎌 Anime Style</option>
+                <option value="Cyberpunk 2077">🌃 Cyberpunk</option>
+                <option value="Oil Painting">🖌️ Oil Painting</option>
+                <option value="3D Pixar Style">🧸 3D Render</option>
+            </select>
+            <select id="lighting">
+                <option value="Cinematic Lighting">Cinematic</option>
+                <option value="Volumetric Sunlight">God Rays</option>
+                <option value="Neon Glow">Neon Lights</option>
+                <option value="Studio Portrait Lighting">Studio Light</option>
+                <option value="Golden Hour">Golden Hour</option>
+            </select>
+        </div>
+
+        <button class="gen-btn" onclick="generateMagic()">Generate Professional Prompt</button>
+
+        <div id="resultArea">
+            <p style="font-weight:bold; color:var(--primary); margin-top:0;">✨ Optimized Master Prompt:</p>
+            <div id="promptText"></div>
+            <button class="copy-btn" onclick="copyPrompt()">📋 Copy Prompt</button>
+        </div>
+    </div>
+
+    <div class="ad-card green" onclick="window.open('https://easyusehub.blogspot.com/p/image-compressor.html', '_blank')">
+        <span class="ad-title">⚡ High-Speed Image Compressor</span>
+        <p style="margin:5px 0; font-size: 14px;">Reduce image size up to 90% without losing quality.</p>
+        <div class="ad-btn" style="color:#059669;">Compress Image</div>
+    </div>
+
+    <div class="ad-card orange" onclick="window.open('https://easyusehub.blogspot.com/p/ultimate-calculators-hub.html', '_blank')">
+        <span class="ad-title">🔢 Smart Life Calculators</span>
+        <p style="margin:5px 0; font-size: 14px;">Calculate Loan EMI, Age, BMI, and much more.</p>
+        <div class="ad-btn" style="color:#d97706;">Open Calculators</div>
+    </div>
+
+    <div class="footer-nav">
+        <button style="background:#10b981;" onclick="window.location.href='https://easyusehub.blogspot.com/p/free-pdf-tools-online.html'">PDF Tools</button>
+        <button style="background:#2563eb;" onclick="window.location.href='https://easyusehub.blogspot.com'">Main Site</button>
+    </div>
+</div>
+
+<script>
+    function generateMagic() {
+        const input = document.getElementById('userInput').value.trim();
+        if(!input) return alert("Please enter your idea!");
+
+        const style = document.getElementById('artStyle').value;
+        const light = document.getElementById('lighting').value;
+        
+        // Professional Keywords Library
+        const camera = ["8k resolution", "extremely detailed", "sharp focus", "unreal engine 5 render", "hyper-realistic"];
+        const artist = ["trending on ArtStation", "masterpiece", "intricate details", "award winning photography"];
+        
+        const randCamera = camera[Math.floor(Math.random() * camera.length)];
+        const randArtist = artist[Math.floor(Math.random() * artist.length)];
+
+        // Building the Master Prompt
+        const finalPrompt = `"${input}", ${style}, ${light}, ${randCamera}, ${randArtist}, wide angle, cinematic composition, depth of field, 4k, HDR, high contrast --v 6.0 --ar 16:9`;
+
+        document.getElementById('promptText').innerText = finalPrompt;
+        document.getElementById('resultArea').style.display = "block";
+
+        // Show Push Ad after 1 second
+        setTimeout(() => {
+            document.getElementById('push-notification').classList.add('active');
+        }, 1000);
+    }
+
+    function copyPrompt() {
+        const text = document.getElementById('promptText').innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Professional Prompt Copied!");
+        });
+    }
+</script>
+
+</body>
+</html>
