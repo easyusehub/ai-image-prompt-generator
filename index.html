@@ -22,7 +22,7 @@
         .logo-text { font-size: 14px; font-weight: 800; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; }
         h1 { font-size: 42px; font-weight: 800; margin: 10px 0; background: linear-gradient(to right, #fff, #64748b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* Push Notification - Hidden by Default */
+        /* Push Notification */
         #push-notification {
             position: fixed; bottom: -150px; right: 20px; width: 300px; background: rgba(30, 41, 59, 0.95);
             backdrop-filter: blur(10px); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex;
@@ -46,12 +46,14 @@
             border: 1px solid rgba(255,255,255,0.1); padding: 35px;
             border-radius: 28px; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
+        .textarea-container { position: relative; width: 100%; }
         textarea {
             width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 16px; padding: 20px; color: #fff; font-size: 16px;
-            resize: none; box-sizing: border-box; margin-bottom: 25px; transition: 0.3s;
+            resize: none; box-sizing: border-box; margin-bottom: 25px; transition: 0.3s; height: 120px;
         }
-        textarea:focus { border-color: var(--primary); outline: none; }
+        textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 15px rgba(37, 99, 235, 0.2); }
+        .char-count { position: absolute; bottom: 35px; right: 20px; font-size: 11px; color: #64748b; }
 
         /* Multi-Option Grid */
         .options-grid {
@@ -62,31 +64,53 @@
         label { display: block; font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
         select {
             width: 100%; background: #161b22; border: 1px solid rgba(255,255,255,0.1);
-            color: #cbd5e1; padding: 12px; border-radius: 10px; cursor: pointer; outline: none; font-size: 13px;
+            color: #cbd5e1; padding: 12px; border-radius: 10px; cursor: pointer; outline: none; font-size: 13px; transition: 0.3s;
         }
+        select:focus { border-color: var(--accent); }
 
+        /* Buttons Box */
+        .btn-group { display: flex; gap: 15px; }
         .action-btn {
             background: linear-gradient(135deg, var(--primary), var(--accent));
             color: white; border: none; padding: 18px; border-radius: 14px;
-            width: 100%; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s;
+            flex: 3; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s; letter-spacing: 1px;
         }
         .action-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4); }
+        .reset-btn {
+            background: rgba(255,255,255,0.05); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1);
+            padding: 18px; border-radius: 14px; flex: 1; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .reset-btn:hover { background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: #ef4444; }
 
         /* Results Display */
         #resultBox {
-            display: none; margin-top: 35px; background: rgba(255,255,255,0.02);
-            border-radius: 18px; padding: 25px; border: 1px solid rgba(255,255,255,0.1);
-            animation: slideUp 0.4s ease;
+            display: none; margin-top: 35px; background: rgba(255, 255, 255, 0.01);
+            border-radius: 18px; padding: 25px; border: 1px solid rgba(6, 182, 212, 0.2);
+            animation: slideUp 0.4s ease; box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.05);
         }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
         .copy-button {
-            background: #10b981; color: white; border: none; padding: 12px 25px;
-            border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%;
+            background: #10b981; color: white; border: none; padding: 15px 25px;
+            border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 20px; width: 100%; transition: 0.3s; font-size: 14px; letter-spacing: 1px;
+        }
+        .copy-button:hover { background: #059669; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); }
+
+        .negative-box {
+            margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.1); font-size: 13px; color: #94a3b8;
         }
 
         .footer-nav { margin-top: 30px; display: flex; gap: 10px; }
         .footer-nav button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; }
+
+        /* Responsive Settings */
+        @media (max-width: 600px) {
+            h1 { font-size: 32px; }
+            .glass-ui { padding: 20px; }
+            .ad-card { padding: 18px; }
+            .btn-group { flex-direction: column; }
+            .reset-btn { padding: 12px; }
+        }
     </style>
 </head>
 <body>
@@ -102,65 +126,77 @@
         <h1>AI Prompt Studio Pro</h1>
     </header>
 
-    <div class="ad-card blue" onclick="window.open('https://easyusehub.blogspot.com', '_blank')">
-        <span class="ad-title">🎁 Access 46+ All-in-One Online Tools</span>
+    <div class="ad-card blue" onclick="window.open('https://easyusehub.org', '_blank')">
+        <span class="ad-title">🎁 Access 60+ All-in-One Online Tools</span>
         <p style="margin:5px 0; font-size: 14px;">PDF Workspace, Image Utilities, and Intelligent Calculators.</p>
         <div class="ad-btn">Explore Now</div>
     </div>
 
     <main class="glass-ui">
-        <label>Main Vision / Concept</label>
-        <textarea id="mainInput" placeholder="Describe your image (e.g., A majestic lion wearing a golden crown)"></textarea>
+        <label for="mainInput">Main Vision / Concept</label>
+        <div class="textarea-container">
+            <textarea id="mainInput" oninput="updateCharCount()" placeholder="Describe your image concept in detail (e.g., A futuristic samurai standing in cyberpunk Neo-Tokyo city)..."></textarea>
+            <div class="char-count" id="charCounter">0 characters</div>
+        </div>
 
         <div class="options-grid">
             <div class="opt-group">
-                <label>Art Style</label>
+                <label for="style">Art Style & Rendering</label>
                 <select id="style">
-                    <option value="Photorealistic, highly detailed, 8k">Photorealistic</option>
-                    <option value="Cyberpunk aesthetic, neon glow">Cyberpunk</option>
-                    <option value="Anime / Manga Style">Anime Style</option>
-                    <option value="Oil Painting, masterpiece quality">Oil Painting</option>
-                    <option value="3D Pixar Style Render">3D Render</option>
+                    <option value="Photorealistic, cinematic realism, hyper-detailed textures, 8k resolution">Photorealistic Cinema</option>
+                    <option value="Cyberpunk futuristic aesthetic, neon ambient occlusion, synthwave color palette, unreal engine 5 render">Cyberpunk Neon</option>
+                    <option value="Japanese Anime Manga Style, detailed line art, vibrant cell shading, Makoto Shinkai aesthetic">Premium Anime</option>
+                    <option value="Classical Oil Painting, Renaissance masterpiece quality, heavy brushstrokes, dramatic chiaroscuro texture">Masterpiece Oil Painting</option>
+                    <option value="3D Pixar Disney Style Render, smooth clay shading, raytracing, cute volumetric composition">3D Animation Render</option>
                 </select>
             </div>
 
             <div class="opt-group">
-                <label>Lighting Effect</label>
+                <label for="lighting">Atmospheric Lighting</label>
                 <select id="lighting">
-                    <option value="Cinematic Lighting, dramatic shadows">Cinematic</option>
-                    <option value="Volumetric Lighting, god rays">God Rays</option>
-                    <option value="Neon glow, vibrant colors">Neon Glow</option>
-                    <option value="Golden Hour, sunset lighting">Golden Hour</option>
-                    <option value="Studio Portrait Lighting">Studio Light</option>
+                    <option value="cinematic lighting, dramatic moody shadows, volumetric god rays, soft light diffusion">Cinematic Moody</option>
+                    <option value="intense neon glow, cyber illumination, bioluminescent reflections, vibrant contrast">Neon Cyber Glow</option>
+                    <option value="golden hour lighting, warm sunset rays, soft edge highlights, nostalgic atmosphere">Golden Hour (Sunset)</option>
+                    <option value="high-end studio portrait lighting, professional softbox exposure, flawless catchlights">Studio Pro Light</option>
+                    <option value="dark moody look, rim lighting, cyberpunk dark ambient, high contrast shadows">Dark Ambient / Rim Light</option>
                 </select>
             </div>
 
             <div class="opt-group">
-                <label>Camera / Lens</label>
+                <label for="camera">Camera Lens & Composition</label>
                 <select id="camera">
-                    <option value="Wide Angle Lens, cinematic panorama">Wide Angle</option>
-                    <option value="Macro Lens, extreme detail">Macro</option>
-                    <option value="85mm Portrait Lens, Bokeh effect">Portrait (Bokeh)</option>
-                    <option value="Drone Photography view">Aerial View</option>
+                    <option value="shot on 35mm lens, cinematic panorama, wide-angle establishing shot, architectural symmetry">35mm Wide Cinema</option>
+                    <option value="macro lens photography, extreme close-up detail, sharp focus, texture magnification">Macro Close-up</option>
+                    <option value="85mm portrait lens, shallow depth of field, creamy bokeh background, sharp facial symmetry">85mm Portrait (Bokeh)</option>
+                    <option value="award-winning drone photography view, satellite high-angle perspective, majestic scale">Aerial Drone View</option>
                 </select>
             </div>
 
             <div class="opt-group">
-                <label>AI Model</label>
+                <label for="model">Target AI Engine</label>
                 <select id="model">
-                    <option value="--v 6.0">Midjourney V6</option>
-                    <option value="DALL-E 3 Style">DALL-E 3</option>
-                    <option value="Stable Diffusion XL">SDXL Pro</option>
+                    <option value="midjourney">Midjourney V6 Elite</option>
+                    <option value="dalle">DALL-E 3 Ultra</option>
+                    <option value="sdxl">Stable Diffusion XL Pro</option>
                 </select>
             </div>
         </div>
 
-        <button class="action-btn" id="genBtn" onclick="generateProPrompt()">ENGAGE AI ENGINE</button>
+        <div class="btn-group">
+            <button class="action-btn" id="genBtn" onclick="generateProPrompt()">ENGAGE AI ENGINE</button>
+            <button class="reset-btn" onclick="resetForm()">Reset</button>
+        </div>
 
         <div id="resultBox">
-            <div style="font-size: 11px; color: var(--accent); font-weight: 800; margin-bottom: 10px; letter-spacing: 1px;">FINAL MASTER PROMPT:</div>
-            <div id="finalText" style="line-height: 1.6; font-size: 15px; color: #e2e8f0;"></div>
-            <button class="copy-button" onclick="copyPrompt()">COPY MASTER PROMPT</button>
+            <div style="font-size: 11px; color: var(--accent); font-weight: 800; margin-bottom: 10px; letter-spacing: 1px;">FINAL PRO MASTER PROMPT:</div>
+            <div id="finalText" style="line-height: 1.7; font-size: 15px; color: #e2e8f0; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); word-wrap: break-word;"></div>
+            
+            <div class="negative-box" id="negativePromptBox" style="display:none;">
+                <b style="color: #ef4444; font-size: 11px; letter-spacing: 1px; display: block; margin-bottom: 5px; text-transform: uppercase;">Suggested Negative Prompt:</b>
+                <span id="negativeText">ugly, deformed, blurry, bad anatomy, low quality, worst quality, extra limbs, mutated hands.</span>
+            </div>
+
+            <button class="copy-button" id="copyBtn" onclick="copyPrompt()">COPY MASTER PROMPT</button>
         </div>
     </main>
 
@@ -183,35 +219,76 @@
 </div>
 
 <script>
-    // Trigger push notification after 10 seconds of page load
     window.onload = function() {
         setTimeout(() => {
-            document.getElementById('push-notification').classList.add('active');
-        }, 10000); // 10000ms = 10 seconds
+            const pushNotify = document.getElementById('push-notification');
+            if (pushNotify) pushNotify.classList.add('active');
+        }, 10000);
     };
+
+    function updateCharCount() {
+        const len = document.getElementById('mainInput').value.length;
+        document.getElementById('charCounter').innerText = `${len} characters`;
+    }
 
     function generateProPrompt() {
         const idea = document.getElementById('mainInput').value.trim();
-        if(!idea) return alert("Please enter your vision first!");
-
+        if(!idea) return alert("Please type your visual idea first!");
+        
         const style = document.getElementById('style').value;
         const lighting = document.getElementById('lighting').value;
         const camera = document.getElementById('camera').value;
-        const model = document.getElementById('model').value;
+        const modelSelection = document.getElementById('model').value;
 
-        // Final Master Prompt Construction
-        const fullPrompt = `${idea}, ${style}, ${lighting}, ${camera}, masterpiece quality, intricate details, highly professional composition, 8k resolution, trending on ArtStation ${model} --ar 16:9`;
+        // Professional Enhancements & Engine Tokens
+        const premiumTokens = "intricate details, hyper-realistic depth, sharp focus, award-winning composition, octane render style, trending on artstation";
+        
+        let finalPrompt = "";
+        const negativeBox = document.getElementById('negativePromptBox');
 
-        document.getElementById('finalText').innerText = fullPrompt;
+        // Mega Prompt Customization per AI Model
+        if (modelSelection === 'midjourney') {
+            finalPrompt = `${idea}, ${style}, ${lighting}, ${camera}, ${premiumTokens}, --style raw --v 6.0 --ar 16:9 --stylize 250`;
+            negativeBox.style.display = "none"; // Midjourney uses --no tags inside main prompt
+        } 
+        else if (modelSelection === 'dalle') {
+            finalPrompt = `A high-end professional digital artwork depicting: ${idea}. The scene is heavily enhanced with ${style}, featuring ${lighting} and captured from a ${camera}. The overall composition is a masterpiece with ${premiumTokens}. Flawless execution.`;
+            negativeBox.style.display = "none";
+        } 
+        else if (modelSelection === 'sdxl') {
+            finalPrompt = `masterpiece, best quality, ${idea}, ${style}, ${lighting}, ${camera}, ${premiumTokens}, highly detailed, 4k resolution`;
+            negativeBox.style.display = "block"; // Show negative prompt box for SDXL users
+        }
+
+        document.getElementById('finalText').innerText = finalPrompt;
         document.getElementById('resultBox').style.display = "block";
+        
+        // Auto scroll to result for better mobile UX
+        document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth' });
     }
 
     function copyPrompt() {
         const text = document.getElementById('finalText').innerText;
+        const copyBtn = document.getElementById('copyBtn');
         if (!text) return;
+        
         navigator.clipboard.writeText(text).then(() => {
-            alert("Prompt Copied to Clipboard!");
+            const originalText = copyBtn.innerText;
+            copyBtn.innerText = "PRO MASTER PROMPT COPIED! ✓";
+            copyBtn.style.background = "#059669";
+            setTimeout(() => {
+                copyBtn.innerText = originalText;
+                copyBtn.style.background = "#10b981";
+            }, 2500);
+        }).catch(err => {
+            alert("Copy failed! Please manually copy the text.");
         });
+    }
+
+    function resetForm() {
+        document.getElementById('mainInput').value = "";
+        document.getElementById('resultBox').style.display = "none";
+        updateCharCount();
     }
 </script>
 
