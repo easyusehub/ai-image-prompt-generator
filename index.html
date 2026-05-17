@@ -135,7 +135,7 @@
     <main class="glass-ui">
         <label for="mainInput">Main Vision / Concept</label>
         <div class="textarea-container">
-            <textarea id="mainInput" oninput="updateCharCount()" placeholder="Describe your image concept in detail (e.g., A futuristic samurai standing in cyberpunk Neo-Tokyo city)..."></textarea>
+            <textarea id="mainInput" oninput="updateCharCount()" placeholder="e.g., Gaming channel banner / Modern tech company logo transparent background / Fantasy landscape poster..."></textarea>
             <div class="char-count" id="charCounter">0 characters</div>
         </div>
 
@@ -240,30 +240,86 @@
         const camera = document.getElementById('camera').value;
         const modelSelection = document.getElementById('model').value;
 
-        // Professional Enhancements & Engine Tokens
-        const premiumTokens = "intricate details, hyper-realistic depth, sharp focus, award-winning composition, octane render style, trending on artstation";
-        
+        // Base Configuration
+        let dynamicTokens = "intricate details, hyper-realistic depth, sharp focus, award-winning composition, octane render style";
+        let aspectRatio = "--ar 16:9"; 
+        let extraParams = "";
         let finalPrompt = "";
         const negativeBox = document.getElementById('negativePromptBox');
 
-        // Mega Prompt Customization per AI Model
+        const lowerIdea = idea.toLowerCase();
+
+        // 1. ADVANCED KEYWORD SMART DETECTION LOGIC
+        if (lowerIdea.includes("logo") || lowerIdea.includes("profile") || lowerIdea.includes("icon") || lowerIdea.includes("emblem") || lowerIdea.includes("favicon")) {
+            // SQUARE RATIO (1:1) - For Icons, Favicons, Profile Pics
+            dynamicTokens = "vector design symmetry, central composition, clean tech edges, micro-details, studio lighting setup, octane render style";
+            aspectRatio = "--ar 1:1";
+            
+            if (lowerIdea.includes("favicon")) {
+                dynamicTokens += ", ultra-minimalist, simplified geometry, high visibility at small size";
+            }
+        } 
+        else if (lowerIdea.includes("banner") || lowerIdea.includes("cover") || lowerIdea.includes("header")) {
+            // ULTRA WIDESCREEN RATIO (21:9) - For YouTube Banners, FB Covers
+            dynamicTokens = "cinematic panorama, wide-angle establishing shot, epic scale, hyper-detailed environment, balanced elements across width, octane render style";
+            aspectRatio = "--ar 21:9"; 
+        } 
+        else if (lowerIdea.includes("thumbnail")) {
+            // THUMBNAIL RATIO (16:9) - High Contrast & Catchy Elements
+            dynamicTokens = "high visual impact, bold contrast, sharp focus on central subject, vibrant colors, thumbnail composition, trending on artstation";
+            aspectRatio = "--ar 16:9";
+        }
+        else if (lowerIdea.includes("poster") || lowerIdea.includes("print")) {
+            // PORTRAIT ASPECT RATIO (4:5 or 2:3) - For Posters
+            dynamicTokens = "epic poster design, vertical composition, dramatic dynamic framing, stunning focal point, highly artistic rendering";
+            aspectRatio = "--ar 4:5";
+        }
+        else {
+            // DEFAULT SCENERY / GENERAL IMAGES
+            dynamicTokens = "cinematic panorama, wide-angle establishing shot, architectural symmetry, hyper-detailed textures, octane render style, trending on artstation";
+            aspectRatio = "--ar 16:9";
+        }
+
+        // 2. TRANSPARENT / BACKGROUND CHECK
+        if (lowerIdea.includes("transparent") || lowerIdea.includes("white background") || lowerIdea.includes("isolated")) {
+            dynamicTokens += ", isolated on pure solid white background, no gradients, vector edge definition";
+            extraParams = " --no shadows gradients background realistic textures photo-shading";
+        }
+
+        // 3. GENERATE TARGET ENGINE PROMPT
         if (modelSelection === 'midjourney') {
-            finalPrompt = `${idea}, ${style}, ${lighting}, ${camera}, ${premiumTokens}, --style raw --v 6.0 --ar 16:9 --stylize 250`;
-            negativeBox.style.display = "none"; // Midjourney uses --no tags inside main prompt
+            finalPrompt = `${idea}, ${style}, ${lighting}, ${camera}, ${dynamicTokens}, 8k resolution, cinematic realism, --style raw --v 6.0 ${aspectRatio} --stylize 250${extraParams}`;
+            negativeBox.style.display = "none";
         } 
         else if (modelSelection === 'dalle') {
-            finalPrompt = `A high-end professional digital artwork depicting: ${idea}. The scene is heavily enhanced with ${style}, featuring ${lighting} and captured from a ${camera}. The overall composition is a masterpiece with ${premiumTokens}. Flawless execution.`;
+            let layoutText = "in a standard 16:9 landscape orientation";
+            if (aspectRatio === "--ar 1:1") layoutText = "in a perfect 1:1 square canvas layout";
+            else if (aspectRatio === "--ar 21:9") layoutText = "in an ultra-wide panoramic 21:9 layout fit for website banner headers";
+            else if (aspectRatio === "--ar 4:5") layoutText = "in a vertical portrait layout ideal for posters";
+
+            let transparentText = lowerIdea.includes("transparent") ? " Ensure the subject is completely isolated on a flat, clean, solid white background with zero shadows or background clutter." : "";
+
+            finalPrompt = `A premium professional digital artwork created ${layoutText} depicting: ${idea}.${transparentText} Heavily enhanced with ${style}, utilizing ${lighting} and captured via ${camera}. The total design represents a true masterpiece with ${dynamicTokens}, flawless asset quality.`;
             negativeBox.style.display = "none";
         } 
         else if (modelSelection === 'sdxl') {
-            finalPrompt = `masterpiece, best quality, ${idea}, ${style}, ${lighting}, ${camera}, ${premiumTokens}, highly detailed, 4k resolution`;
-            negativeBox.style.display = "block"; // Show negative prompt box for SDXL users
+            let layoutSuffix = ", widescreen layout";
+            if (aspectRatio === "--ar 1:1") layoutSuffix = ", square layout, centered emblem design";
+            else if (aspectRatio === "--ar 21:9") layoutSuffix = ", ultra-wide panorama layout, web header formatting";
+            else if (aspectRatio === "--ar 4:5") layoutSuffix = ", vertical poster alignment, portrait framing";
+
+            let sdNegative = "ugly, deformed, blurry, bad anatomy, low quality, worst quality, extra limbs, mutated hands";
+            if (lowerIdea.includes("transparent")) {
+                sdNegative += ", shadows, background scenery, landscape, realistic textures, context blending";
+            }
+            document.getElementById('negativeText').innerText = sdNegative;
+
+            finalPrompt = `masterpiece, best quality, ${idea}, ${style}, ${lighting}, ${camera}, ${dynamicTokens}, highly detailed, 4k resolution${layoutSuffix}`;
+            negativeBox.style.display = "block";
         }
 
         document.getElementById('finalText').innerText = finalPrompt;
         document.getElementById('resultBox').style.display = "block";
-        
-        // Auto scroll to result for better mobile UX
         document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth' });
     }
 
