@@ -135,11 +135,22 @@
     <main class="glass-ui">
         <label for="mainInput">Main Vision / Concept</label>
         <div class="textarea-container">
-            <textarea id="mainInput" oninput="updateCharCount()" placeholder="e.g., Gaming channel banner / Modern tech company logo transparent background / Fantasy landscape poster..."></textarea>
+            <textarea id="mainInput" oninput="updateCharCount()" placeholder="Describe your design (e.g., Neon tech eagle, fantasy landscape, futuristic cyber warrior...)"></textarea>
             <div class="char-count" id="charCounter">0 characters</div>
         </div>
 
         <div class="options-grid">
+            <div class="opt-group">
+                <label for="mediaType">Target Canvas / Media Type</label>
+                <select id="mediaType">
+                    <option value="general">General / Cinematic Scene (16:9)</option>
+                    <option value="logo">Logo / Icon / Favicon (1:1 Flat Base)</option>
+                    <option value="thumbnail">YouTube / Social Thumbnail (16:9 High-Contrast)</option>
+                    <option value="banner">Website Header / Social Banner (21:9 Widescreen)</option>
+                    <option value="poster">Art Poster / Print Alignment (4:5 Portrait)</option>
+                </select>
+            </div>
+
             <div class="opt-group">
                 <label for="style">Art Style & Rendering</label>
                 <select id="style">
@@ -159,16 +170,6 @@
                     <option value="golden hour lighting, warm sunset rays, soft edge highlights, nostalgic atmosphere">Golden Hour (Sunset)</option>
                     <option value="high-end studio portrait lighting, professional softbox exposure, flawless catchlights">Studio Pro Light</option>
                     <option value="dark moody look, rim lighting, cyberpunk dark ambient, high contrast shadows">Dark Ambient / Rim Light</option>
-                </select>
-            </div>
-
-            <div class="opt-group">
-                <label for="camera">Camera Lens & Composition</label>
-                <select id="camera">
-                    <option value="shot on 35mm lens, cinematic panorama, wide-angle establishing shot, architectural symmetry">35mm Wide Cinema</option>
-                    <option value="macro lens photography, extreme close-up detail, sharp focus, texture magnification">Macro Close-up</option>
-                    <option value="85mm portrait lens, shallow depth of field, creamy bokeh background, sharp facial symmetry">85mm Portrait (Bokeh)</option>
-                    <option value="award-winning drone photography view, satellite high-angle perspective, majestic scale">Aerial Drone View</option>
                 </select>
             </div>
 
@@ -235,86 +236,90 @@
         const idea = document.getElementById('mainInput').value.trim();
         if(!idea) return alert("Please type your visual idea first!");
         
-        const style = document.getElementById('style').value;
-        const lighting = document.getElementById('lighting').value;
-        const camera = document.getElementById('camera').value;
+        let style = document.getElementById('style').value;
+        let lighting = document.getElementById('lighting').value;
+        const mediaType = document.getElementById('mediaType').value;
         const modelSelection = document.getElementById('model').value;
 
-        // Base Configuration
-        let dynamicTokens = "intricate details, hyper-realistic depth, sharp focus, award-winning composition, octane render style";
+        let dynamicTokens = "intricate details, sharp focus, award-winning composition";
         let aspectRatio = "--ar 16:9"; 
         let extraParams = "";
         let finalPrompt = "";
         const negativeBox = document.getElementById('negativePromptBox');
-
         const lowerIdea = idea.toLowerCase();
 
-        // 1. ADVANCED KEYWORD SMART DETECTION LOGIC
-        if (lowerIdea.includes("logo") || lowerIdea.includes("profile") || lowerIdea.includes("icon") || lowerIdea.includes("emblem") || lowerIdea.includes("favicon")) {
-            // SQUARE RATIO (1:1) - For Icons, Favicons, Profile Pics
-            dynamicTokens = "vector design symmetry, central composition, clean tech edges, micro-details, studio lighting setup, octane render style";
+        // BRAND NEW ENTERPRISE MATRIX LOGIC
+        if (mediaType === "logo" || lowerIdea.includes("logo") || lowerIdea.includes("icon") || lowerIdea.includes("favicon")) {
+            // Strong Pure Flat Logo Engine
+            dynamicTokens = "vector graphic logo design, minimalist flat icon, 2d silhouette, balanced composition, crisp vector lines, clean geometry, isolated on solid pure white background, zero shadows, no 3d background room, flat backdrop";
             aspectRatio = "--ar 1:1";
-            
-            if (lowerIdea.includes("favicon")) {
-                dynamicTokens += ", ultra-minimalist, simplified geometry, high visibility at small size";
-            }
+            lighting = "studio lighting setup, even illumination, no background shadows";
+            style = "Graphic Design Style, smooth vector shading";
+            extraParams = " --no room wall office scenery background realistic textures photo-shading gradients shadows 3d-render";
         } 
-        else if (lowerIdea.includes("banner") || lowerIdea.includes("cover") || lowerIdea.includes("header")) {
-            // ULTRA WIDESCREEN RATIO (21:9) - For YouTube Banners, FB Covers
-            dynamicTokens = "cinematic panorama, wide-angle establishing shot, epic scale, hyper-detailed environment, balanced elements across width, octane render style";
-            aspectRatio = "--ar 21:9"; 
-        } 
-        else if (lowerIdea.includes("thumbnail")) {
-            // THUMBNAIL RATIO (16:9) - High Contrast & Catchy Elements
-            dynamicTokens = "high visual impact, bold contrast, sharp focus on central subject, vibrant colors, thumbnail composition, trending on artstation";
+        else if (mediaType === "thumbnail" || lowerIdea.includes("thumbnail")) {
+            // High Impact Thumbnail Engine (Vibrant Background)
+            dynamicTokens = "high visual impact thumbnail composition, bold details, intense contrast, hyper-detailed rich background, sharp focal point, colorful eye-catching presentation, trending on artstation";
             aspectRatio = "--ar 16:9";
-        }
-        else if (lowerIdea.includes("poster") || lowerIdea.includes("print")) {
-            // PORTRAIT ASPECT RATIO (4:5 or 2:3) - For Posters
-            dynamicTokens = "epic poster design, vertical composition, dramatic dynamic framing, stunning focal point, highly artistic rendering";
+        } 
+        else if (mediaType === "banner" || lowerIdea.includes("banner") || lowerIdea.includes("cover")) {
+            // Ultra Widescreen Web Header Engine
+            dynamicTokens = "epic cinematic panorama banner layout, ultra-wide scenery, balanced horizontally for website header, beautiful expansive background environment, octane render style";
+            aspectRatio = "--ar 21:9";
+        } 
+        else if (mediaType === "poster" || lowerIdea.includes("poster")) {
+            // Vertical Print Engine
+            dynamicTokens = "artistic poster print layout, professional vertical frame structure, dramatic focus, sharp conceptual graphics";
             aspectRatio = "--ar 4:5";
-        }
+        } 
         else {
-            // DEFAULT SCENERY / GENERAL IMAGES
-            dynamicTokens = "cinematic panorama, wide-angle establishing shot, architectural symmetry, hyper-detailed textures, octane render style, trending on artstation";
+            // Default Scenery Config
+            dynamicTokens = "cinematic panorama, hyper-detailed textures, masterpiece render, high-end production aesthetics";
             aspectRatio = "--ar 16:9";
         }
 
-        // 2. TRANSPARENT / BACKGROUND CHECK
+        // Force transparent filter if manually typed anywhere
         if (lowerIdea.includes("transparent") || lowerIdea.includes("white background") || lowerIdea.includes("isolated")) {
-            dynamicTokens += ", isolated on pure solid white background, no gradients, vector edge definition";
-            extraParams = " --no shadows gradients background realistic textures photo-shading";
+            if(!dynamicTokens.includes("white background")) {
+                dynamicTokens += ", isolated on solid pure white background, zero shadows, flat backdrop";
+                extraParams = " --no room wall office scenery background realistic textures photo-shading gradients shadows 3d-render";
+            }
         }
 
-        // 3. GENERATE TARGET ENGINE PROMPT
+        // COMPILE PER ENGINE
         if (modelSelection === 'midjourney') {
-            finalPrompt = `${idea}, ${style}, ${lighting}, ${camera}, ${dynamicTokens}, 8k resolution, cinematic realism, --style raw --v 6.0 ${aspectRatio} --stylize 250${extraParams}`;
+            finalPrompt = `${idea}, ${style}, ${lighting}, ${dynamicTokens}, 8k resolution, cinematic realism${extraParams} ${aspectRatio} --style raw --v 6.0 --stylize 250`;
             negativeBox.style.display = "none";
         } 
         else if (modelSelection === 'dalle') {
-            let layoutText = "in a standard 16:9 landscape orientation";
-            if (aspectRatio === "--ar 1:1") layoutText = "in a perfect 1:1 square canvas layout";
-            else if (aspectRatio === "--ar 21:9") layoutText = "in an ultra-wide panoramic 21:9 layout fit for website banner headers";
-            else if (aspectRatio === "--ar 4:5") layoutText = "in a vertical portrait layout ideal for posters";
+            let canvasLayout = "in a standard 16:9 landscape layout";
+            if (aspectRatio === "--ar 1:1") canvasLayout = "in a perfect 1:1 square canvas asset";
+            else if (aspectRatio === "--ar 21:9") canvasLayout = "in an ultra-wide panoramic 21:9 website banner orientation";
+            else if (aspectRatio === "--ar 4:5") canvasLayout = "in a vertical portrait 4:5 aspect ratio layout";
 
-            let transparentText = lowerIdea.includes("transparent") ? " Ensure the subject is completely isolated on a flat, clean, solid white background with zero shadows or background clutter." : "";
+            let bgLock = "";
+            if (mediaType === "logo" || lowerIdea.includes("transparent") || lowerIdea.includes("white background")) {
+                bgLock = " Absolutely zero multi-dimensional rooms, office desks, background textures, or environment clutter. The subject must be 100% cleanly isolated on a solid flat white backdrop.";
+            } else {
+                bgLock = " Complete with a fully integrated, beautiful context-aware background scene.";
+            }
 
-            finalPrompt = `A premium professional digital artwork created ${layoutText} depicting: ${idea}.${transparentText} Heavily enhanced with ${style}, utilizing ${lighting} and captured via ${camera}. The total design represents a true masterpiece with ${dynamicTokens}, flawless asset quality.`;
+            finalPrompt = `Professional premium digital asset created ${canvasLayout} showcasing: ${idea}.${bgLock} Highly optimized with ${style}, utilizing ${lighting}. Crafted as a masterpiece with ${dynamicTokens}.`;
             negativeBox.style.display = "none";
         } 
         else if (modelSelection === 'sdxl') {
             let layoutSuffix = ", widescreen layout";
-            if (aspectRatio === "--ar 1:1") layoutSuffix = ", square layout, centered emblem design";
-            else if (aspectRatio === "--ar 21:9") layoutSuffix = ", ultra-wide panorama layout, web header formatting";
-            else if (aspectRatio === "--ar 4:5") layoutSuffix = ", vertical poster alignment, portrait framing";
+            if (aspectRatio === "--ar 1:1") layoutSuffix = ", square 1:1 layout, centered template design";
+            else if (aspectRatio === "--ar 21:9") layoutSuffix = ", ultra-wide 21:9 panorama canvas format";
+            else if (aspectRatio === "--ar 4:5") layoutSuffix = ", vertical 4:5 portrait frame setup";
 
             let sdNegative = "ugly, deformed, blurry, bad anatomy, low quality, worst quality, extra limbs, mutated hands";
-            if (lowerIdea.includes("transparent")) {
-                sdNegative += ", shadows, background scenery, landscape, realistic textures, context blending";
+            if (mediaType === "logo" || lowerIdea.includes("transparent")) {
+                sdNegative += ", room background, wall, office layout, multi-dimensional shadows, environment scenery, realistic photo textures";
             }
             document.getElementById('negativeText').innerText = sdNegative;
 
-            finalPrompt = `masterpiece, best quality, ${idea}, ${style}, ${lighting}, ${camera}, ${dynamicTokens}, highly detailed, 4k resolution${layoutSuffix}`;
+            finalPrompt = `masterpiece, high quality asset, ${idea}, ${style}, ${lighting}, ${dynamicTokens}, highly detailed, 4k resolution${layoutSuffix}`;
             negativeBox.style.display = "block";
         }
 
